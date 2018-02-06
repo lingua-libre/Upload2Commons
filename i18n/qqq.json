@@ -1,0 +1,12 @@
+{
+    "@metadata": {
+        "authors": [
+            "Antoine Lamielle"
+        ]
+    },
+    "upload2Commons": "The name of the extension",
+    "upload2Commons-desc": "{{desc|name=Upload2Commons|url=https://www.mediawiki.org/wiki/Extension:Upload2Commons}}",
+    "apihelp-upload-to-commons-summary": "",
+    "apihelp-upload-to-commons-extended-description": "",
+    "apihelp-upload-to-commons-param-filename": ""
+}

@@ -1,0 +1,44 @@
+{
+    "name": "Upload2Commons",
+    "version": "0.1.0",
+    "author": [
+        "Antoine Lamielle"
+    ],
+    "url": "https://www.mediawiki.org/wiki/Extension:Upload2Commons",
+    "namemsg": "upload2Commons",
+    "descriptionmsg": "upload2Commons-desc",
+    "license-name": "GPL-2.0+",
+    "type": "other",
+    "manifest_version": 1,
+    "MessagesDirs": {
+        "Upload2Commons": [
+            "i18n"
+        ]
+    },
+    "GroupPermissions": {
+        "*": {
+            "remoteupload": false
+        },
+        "user": {
+            "remoteupload": true
+        },
+        "bot": {
+            "remoteupload": true
+        },
+        "sysop": {
+            "remoteupload": true
+        }
+    },
+    "AvailableRights": [
+        "remoteupload"
+    ],
+    "AutoloadNamespaces": {
+        "Upload2Commons\\": "includes/"
+    },
+    "AutoloadClasses": {
+        "Upload2Commons\\ApiUpload2Commons": "includes/ApiUpload2Commons.php"
+    },
+    "APIModules": {
+        "upload-to-commons": "Upload2Commons\\ApiUpload2Commons"
+    }
+}

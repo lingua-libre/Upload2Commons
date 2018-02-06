@@ -1,0 +1,13 @@
+{
+    "@metadata": {
+        "authors": [
+            "Antoine Lamielle"
+        ]
+    },
+    "upload2Commons": "Upload2Commons",
+    "upload2Commons-desc": "Upload files to commons using OAuth.",
+    "apihelp-upload-to-commons-summary": "Upload a local file to a remote wiki.",
+    "apihelp-upload-to-commons-extended-description": "",
+    "apihelp-upload-to-commons-example": "",
+    "apihelp-upload-to-commons-param-filename": "Target filename."
+}
