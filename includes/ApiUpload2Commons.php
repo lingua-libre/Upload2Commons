@@ -15,6 +15,9 @@ use ParserOptions;
 use stdClass;
 use Title;
 use RepoGroup;
+use FSFile;
+use WikiPage;
+use ApiQueryStashImageInfo;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
 use MediaWiki\OAuthClient\Client;
@@ -25,6 +28,7 @@ use MediaWiki\OAuthClient\Client;
  */
 class ApiUpload2Commons extends ApiBase {
 	public function execute() {
+	    global $wgUploadDirectory;
 	    // Check whether the user has the appropriate local permissions
 		$user = $this->getUser();
 		if ( !$user->isLoggedIn() ) {
@@ -43,11 +47,12 @@ class ApiUpload2Commons extends ApiBase {
 		$this->requireOnlyOneParameter($params, 'filename', 'filekey');
 
         // Fetch the given (possibely stashed) file from it's name
+        $localRepo = RepoGroup::singleton()->getLocalRepo();
         if( $params['filename'] ) {
 			$this->file = wfLocalFile( $params['filename'] );
         }
         else {
-            $this->stash = RepoGroup::singleton()->getLocalRepo()->getUploadStash( $user );
+            $this->stash = $localRepo->getUploadStash( $user );
             $this->file = $this->stash->getFile( $params['filekey'] );
         }
 
@@ -56,9 +61,34 @@ class ApiUpload2Commons extends ApiBase {
 		    $this->dieWithError( [ 'apierror-invalidtitle', wfEscapeWikiText( $params['filename'] ) ] );
 	    }
 
+	    // By default, the file will have the same name on the remote wiki
+	    // but let the user change it by using the 'remotefilename param
+	    $title = $this->file->getTitle();
+	    $remoteFilename = $title->getPrefixedText();
+	    if ( $params['remotefilename'] ) {
+	        $remoteFilename = Title::makeTitle(NS_FILE, $params['remotefilename']);
+	    }
+
+	    // Fetch the rest of the params to be passed to the remote wiki API
+	    $text = $params['text'];
+	    if ( $params['filename'] ) {
+	        $text = WikiPage::factory( $title )->getContent()->mText;
+	    }
+        $comment = $params['comment'];
+        $tags = $params['tags'];
+
 	    $this->getResult()->addValue( null, $this->getModuleName(),
-				[ 'filename' => $this->file->getPath() ]
+				[
+				    'path' => $this->file->getLocalRefPath(),
+				    'title' => $title,
+				    'remoteFilename' => $remoteFilename,
+				    'desc' => $text,
+				    'comment' => $comment,
+				    'tags' => $tags,
+				]
 			);
+	    // Remove file from stash
+	    // $this->stash->removeFile( $params['filekey'] );
 	}
 	public function getAllowedParams() {
 		return [
@@ -68,7 +98,7 @@ class ApiUpload2Commons extends ApiBase {
 			'filekey' => [
 				ApiBase::PARAM_TYPE => 'string',
 			],
-			'rfilename' => [
+			'remotefilename' => [
 				ApiBase::PARAM_TYPE => 'string',
 			],
 			'text' => [
