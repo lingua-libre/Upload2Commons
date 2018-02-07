@@ -21,6 +21,11 @@ use ApiQueryStashImageInfo;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
 use MediaWiki\OAuthClient\Client;
+use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\Extensions\OAuthAuthentication\Config;
+use MediaWiki\Extensions\OAuthAuthentication\OAuthExternalUser;
+use MediaWiki\Auth\AuthManager;
+use Upload2Commons\OAuthRequest;
 
 /**
  * This class implements action=upload-to-commons API, sending a locally uploaded file to commons.
@@ -30,66 +35,88 @@ class ApiUpload2Commons extends ApiBase {
 	public function execute() {
 	    global $wgUploadDirectory;
 	    // Check whether the user has the appropriate local permissions
-		$user = $this->getUser();
-		if ( !$user->isLoggedIn() ) {
+		$this->user = $this->getUser();
+		if ( !$this->user->isLoggedIn() ) {
 		    $this->dieWithError( [ 'apierror-mustbeloggedin', $this->msg( 'action-upload' ) ] );
 		}
 		$this->checkUserRightsAny( 'remoteupload' );
-        if ( $user->isBlocked() ) {
-            $this->dieBlocked( $user->getBlock() );
+        if ( $this->user->isBlocked() ) {
+            $this->dieBlocked( $this->user->getBlock() );
         }
-        if ( $user->isBlockedGlobally() ) {
-            $this->dieBlocked( $user->getGlobalBlock() );
+        if ( $this->user->isBlockedGlobally() ) {
+            $this->dieBlocked( $this->user->getGlobalBlock() );
         }
 
 		// Parameter handling
 		$params = $this->extractRequestParams();
 		$this->requireOnlyOneParameter($params, 'filename', 'filekey');
 
-        // Fetch the given (possibely stashed) file from it's name
+        // Prepare the request
+        $request = $this->forgeRequest( $params );
+
+        // Send the request to the foreign wiki
+        $requester = new OAuthRequest();
+		$result = $requester->postWithToken( $this->user, 'csrf', $request );
+	    $this->getResult()->addValue( null, $this->getModuleName(),
+			[
+			    'request' => $request,
+			    'result' => $result,
+			]
+		);
+	    // Remove file from stash
+	    // $this->stash->removeFile( $params['filekey'] );
+	}
+
+	public function forgeRequest($params) {
+	    $request = array();
+
+	    // Fetch the given (possibely stashed) file from it's name
         $localRepo = RepoGroup::singleton()->getLocalRepo();
         if( $params['filename'] ) {
-			$this->file = wfLocalFile( $params['filename'] );
+			$file = wfLocalFile( $params['filename'] );
         }
         else {
-            $this->stash = $localRepo->getUploadStash( $user );
-            $this->file = $this->stash->getFile( $params['filekey'] );
+            $this->stash = $localRepo->getUploadStash( $this->user );
+            $file = $this->stash->getFile( $params['filekey'] );
         }
 
         // Check that the file exists
-	    if ( !$this->file->exists() ) {
+	    if ( !$file->exists() ) {
 		    $this->dieWithError( [ 'apierror-invalidtitle', wfEscapeWikiText( $params['filename'] ) ] );
 	    }
 
 	    // By default, the file will have the same name on the remote wiki
 	    // but let the user change it by using the 'remotefilename param
-	    $title = $this->file->getTitle();
-	    $remoteFilename = $title->getPrefixedText();
+	    $title = $file->getTitle();
+	    $request['filename'] = $title->getPrefixedText();
 	    if ( $params['remotefilename'] ) {
-	        $remoteFilename = Title::makeTitle(NS_FILE, $params['remotefilename']);
+	        $request['filename'] = Title::makeTitle(NS_FILE, $params['remotefilename']);
 	    }
 
 	    // Fetch the rest of the params to be passed to the remote wiki API
-	    $text = $params['text'];
-	    if ( $params['filename'] ) {
-	        $text = WikiPage::factory( $title )->getContent()->mText;
-	    }
-        $comment = $params['comment'];
-        $tags = $params['tags'];
 
-	    $this->getResult()->addValue( null, $this->getModuleName(),
-				[
-				    'path' => $this->file->getLocalRefPath(),
-				    'title' => $title,
-				    'remoteFilename' => $remoteFilename,
-				    'desc' => $text,
-				    'comment' => $comment,
-				    'tags' => $tags,
-				]
-			);
-	    // Remove file from stash
-	    // $this->stash->removeFile( $params['filekey'] );
+	    if ( $params['text'] ) {
+	        $request['text'] = $params['text'];
+	    }
+	    else if ( $params['filename'] ) {
+	        $request['text'] = WikiPage::factory( $title )->getContent()->mText;
+	    }
+
+	    if ( $params['comment'] ) {
+            $request['comment'] = $params['comment'];
+	    }
+
+	    if ( $params['tags'] ) {
+            $request['tags'] = $params['tags'];
+        }
+
+	    if ( $params['ignorewarnings'] ) {
+            $request['ignorewarnings'] = $params['ignorewarnings'];
+        }
+
+        return $request;
 	}
+
 	public function getAllowedParams() {
 		return [
 			'filename' => [
