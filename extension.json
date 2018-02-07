@@ -36,6 +36,7 @@
         "Upload2Commons\\": "includes/"
     },
     "AutoloadClasses": {
+        "Upload2Commons\\OAuthRequest": "includes/OAuthRequest.php",
         "Upload2Commons\\ApiUpload2Commons": "includes/ApiUpload2Commons.php"
     },
     "APIModules": {
