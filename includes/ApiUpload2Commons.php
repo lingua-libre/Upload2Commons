@@ -18,6 +18,7 @@ use RepoGroup;
 use FSFile;
 use WikiPage;
 use ManualLogEntry;
+use MWException;
 use ApiQueryStashImageInfo;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
@@ -56,7 +57,7 @@ class ApiUpload2Commons extends ApiBase {
 		$params = $this->extractRequestParams();
 		$this->requireOnlyOneParameter($params, 'localfilename', 'filekey');
 		if ( $params['filekey'] and !$params['filename'] ) {
-		    $this->dieWithError( [ 'apierror-stashrequirefilename' ] );
+		    $this->dieWithError( 'apierror-stashrequirefilename' );
 		}
 		if ( $params['removeafterupload'] and $params['localfilename'] ) {
 		    $this->dieWithError( [ 'apierror-removeonlystash', $params['localfilename'] ] );
@@ -69,8 +70,15 @@ class ApiUpload2Commons extends ApiBase {
         $this->canUserUploadFile();
 
         // Send the request to the foreign wiki
-        $requester = new OAuthRequest();
-		$result = $requester->postWithToken( $this->user, 'csrf', $request, true );
+        try {
+            $requester = new OAuthRequest();
+		    $result = $requester->postWithToken( $this->user, 'csrf', $request, true );
+		} catch(MWException $e) {
+		    $this->dieWithError( 'apierror-unknownerror-oauth' );
+		}
+		if ( $result == null ) {
+		    $this->dieWithError( 'apierror-unknownerror-oauth' );
+		}
 
         if ( $this->isUploadSuccessfull( $result ) ) {
             // Log the action

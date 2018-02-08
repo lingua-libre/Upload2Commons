@@ -11,6 +11,7 @@ namespace Upload2Commons;
 use FormatJson;
 use stdClass;
 use User;
+use MWException;
 use MediaWiki\OAuthClient\Client;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Extensions\OAuthAuthentication\Config;
@@ -38,7 +39,12 @@ class OAuthRequest extends Client {
             'format' => 'json',
             'meta' => 'tokens',
             'type' => $tokenType
-        ) )->query->tokens;
+        ) );
+        if ( !isset( $tokens->query->tokens ) ) {
+            throw new \MWException('unknownerror-oauth');
+        }
+        $tokens = $tokens->query->tokens;
+
         foreach ( $tokens as $name=>$token ) {
             if ( $name === "{$tokenType}token" ) {
                 $apiParams['token'] = $token;
@@ -50,6 +56,7 @@ class OAuthRequest extends Client {
     }
 
     public function post( $user, $apiParams, $hasFile = false ) {
+        global $wgUpload2CommonsApiUrl;
 		$accessToken = $this->getAccessToken( $user );
 
         if ( ! isset($apiParams['file']) ) {
@@ -61,7 +68,7 @@ class OAuthRequest extends Client {
 
         return json_decode( $this->makeOAuthCall(
             $accessToken,
-            'https://oauth.0x010c.fr/api.php',
+            $wgUpload2CommonsApiUrl,
             true,
             $apiParams,
             $hasFile
