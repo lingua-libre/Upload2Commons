@@ -8,9 +8,6 @@
  */
 namespace Upload2Commons;
 
-use FormatJson;
-use stdClass;
-use User;
 use MWException;
 use MediaWiki\OAuthClient\Client;
 use MediaWiki\Logger\LoggerFactory;
@@ -33,7 +30,7 @@ class OAuthRequest extends Client {
 	    }
     }
 
-    public function postWithToken( $user, $tokenType, $apiParams, $hasFile = false ) {
+    public function postWithToken( \User $user, $tokenType, array $apiParams, $hasFile = false ) {
         $tokens = $this->post( $user, array(
             'action' => 'query',
             'format' => 'json',
@@ -51,11 +48,10 @@ class OAuthRequest extends Client {
                 break;
             }
         }
-        // TODO: raise an error if we failed to get the token
         return $this->post( $user, $apiParams, $hasFile );
     }
 
-    public function post( $user, $apiParams, $hasFile = false ) {
+    public function post( \User $user, array $apiParams, $hasFile = false ) {
         global $wgUpload2CommonsApiUrl;
 		$accessToken = $this->getAccessToken( $user );
 
@@ -74,7 +70,7 @@ class OAuthRequest extends Client {
             $hasFile
         ) );
 	}
-	protected function getAccessToken( $user ) {
+	protected function getAccessToken( \User $user ) {
         // Get OAuth datas stored in the DB
 		if ( !isset( $user->extAuthObj ) ) {
 			$user->extAuthObj = OAuthExternalUser::allFromUser( $user, wfGetDB( DB_MASTER ) )[0];
