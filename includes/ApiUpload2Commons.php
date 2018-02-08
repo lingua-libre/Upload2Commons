@@ -64,7 +64,12 @@ class ApiUpload2Commons extends ApiBase {
 		}
 
         // Prepare the request
-        $request = $this->forgeRequest( $params );
+        try {
+            $request = $this->forgeRequest( $params );
+        }
+        catch (\UploadStashException $e) {
+            $this->dieWithError( [ 'apierror-stashedfilenotfound', $params['filekey'] ] );
+        }
 
         // Check that the user has the right tu upload this file
         $this->canUserUploadFile();
@@ -113,11 +118,9 @@ class ApiUpload2Commons extends ApiBase {
 
 	    $this->getResult()->addValue( null, $this->getModuleName(),
 			[
-			    'result' => $result
+			    'oauth' => $result
 			]
 		);
-	    // Remove file from stash
-	    // $this->stash->removeFile( $params['filekey'] );
 	}
 
 	private function canUserUploadFile() {
