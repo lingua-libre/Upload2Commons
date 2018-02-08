@@ -63,13 +63,31 @@ class ApiUpload2Commons extends ApiBase {
         // Send the request to the foreign wiki
         $requester = new OAuthRequest();
 		$result = $requester->postWithToken( $this->user, 'csrf', $request, true );
+
+        // Remove the stash if the upload has succeeded and if asked by the user
+		if ( $params['removeafterupload'] ) {
+		    $isRemoved = $this->removeAfterUpload( $result, $params['filekey'] );
+            $this->getResult()->addValue( null, $this->getModuleName(),
+                [ 'removeafterupload' => json_encode( $isRemoved ) ]
+            );
+		}
+
 	    $this->getResult()->addValue( null, $this->getModuleName(),
 			[
-			    'result' => $result,
+			    'result' => $result
 			]
 		);
 	    // Remove file from stash
 	    // $this->stash->removeFile( $params['filekey'] );
+	}
+
+	private function removeAfterUpload( $result, $filekey ) {
+        if( isset( $result->upload->result ) ) {
+            if ( $result->upload->result === 'Success' ) {
+                return $this->stash->removeFile( $filekey );
+            }
+        }
+        return false;
 	}
 
 	public function forgeRequest($params) {
