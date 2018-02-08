@@ -17,19 +17,24 @@
     },
     "GroupPermissions": {
         "*": {
+            "remoteuploadown": false,
             "remoteupload": false
         },
         "user": {
-            "remoteupload": true
+            "remoteuploadown": true,
+            "remoteupload": false
         },
         "bot": {
+            "remoteuploadown": true,
             "remoteupload": true
         },
         "sysop": {
+            "remoteuploadown": true,
             "remoteupload": true
         }
     },
     "AvailableRights": [
+        "remoteuploadown",
         "remoteupload"
     ],
     "AutoloadNamespaces": {

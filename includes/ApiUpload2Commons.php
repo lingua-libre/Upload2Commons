@@ -39,7 +39,6 @@ class ApiUpload2Commons extends ApiBase {
 		if ( !$this->user->isLoggedIn() ) {
 		    $this->dieWithError( [ 'apierror-mustbeloggedin', $this->msg( 'action-upload' ) ] );
 		}
-		$this->checkUserRightsAny( 'remoteupload' );
         if ( $this->user->isBlocked() ) {
             $this->dieBlocked( $this->user->getBlock() );
         }
@@ -59,6 +58,9 @@ class ApiUpload2Commons extends ApiBase {
 
         // Prepare the request
         $request = $this->forgeRequest( $params );
+
+        // Check that the user has the right tu upload this file
+        $this->canUserUploadFile();
 
         // Send the request to the foreign wiki
         $requester = new OAuthRequest();
@@ -81,6 +83,15 @@ class ApiUpload2Commons extends ApiBase {
 	    // $this->stash->removeFile( $params['filekey'] );
 	}
 
+	private function canUserUploadFile() {
+	    if ( $this->file->getUser('id') == $this->user->getId() ) {
+	        $this->checkUserRightsAny( 'remoteuploadown' );
+	    }
+	    else {
+	        $this->checkUserRightsAny( 'remoteupload' );
+	    }
+	}
+
 	private function removeAfterUpload( $result, $filekey ) {
         if( isset( $result->upload->result ) ) {
             if ( $result->upload->result === 'Success' ) {
@@ -99,27 +110,27 @@ class ApiUpload2Commons extends ApiBase {
 	    // Fetch the given (possibely stashed) file from it's name
         $localRepo = RepoGroup::singleton()->getLocalRepo();
         if( $params['localfilename'] ) {
-			$file = wfLocalFile( $params['localfilename'] );
+			$this->file = wfLocalFile( $params['localfilename'] );
         }
         else {
             $this->stash = $localRepo->getUploadStash( $this->user );
-            $file = $this->stash->getFile( $params['filekey'] );
+            $this->file= $this->stash->getFile( $params['filekey'] );
         }
 
         // Check that the file exists
-	    if ( !$file->exists() ) {
+	    if ( !$this->file->exists() ) {
 		    $this->dieWithError( [ 'apierror-invalidtitle', wfEscapeWikiText( $params['localfilename'] ) ] );
 	    }
 
 	    // By default, the file will have the same name on the remote wiki
 	    // but let the user change it by using the remotefilename param
-	    $title = $file->getTitle();
+	    $title = $this->file->getTitle();
 	    $request['filename'] = $title->getPrefixedText();
 	    if ( $params['filename'] ) {
 	        $request['filename'] = Title::makeTitle(NS_FILE, $params['filename']);
 	    }
 
-	    $request['file'] = new \CurlFile($file->getLocalRefPath());
+	    $request['file'] = new \CurlFile($this->file->getLocalRefPath());
 
 	    // Fetch the rest of the params to be passed to the remote wiki API
 
