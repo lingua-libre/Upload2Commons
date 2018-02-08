@@ -69,7 +69,6 @@ class OAuthRequest extends Client {
 	}
 	protected function getAccessToken( $user ) {
         // Get OAuth datas stored in the DB
-        // TODO: Manage not OAuth users ('you have to connect your account to a remote account')
 		if ( !isset( $user->extAuthObj ) ) {
 			$user->extAuthObj = OAuthExternalUser::allFromUser( $user, wfGetDB( DB_MASTER ) )[0];
 		}

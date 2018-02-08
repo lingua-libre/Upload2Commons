@@ -46,6 +46,11 @@ class ApiUpload2Commons extends ApiBase {
         if ( $this->user->isBlockedGlobally() ) {
             $this->dieBlocked( $this->user->getGlobalBlock() );
         }
+        $externalUsers = OAuthExternalUser::allFromUser( $this->user, wfGetDB( DB_MASTER ) );
+        if ( count( $externalUsers ) != 1 ) {
+            $this->dieWithError( 'apierror-nolinkedaccount' );
+        }
+        $this->user->extAuthObj = $externalUsers[0];
 
 		// Parameter handling
 		$params = $this->extractRequestParams();

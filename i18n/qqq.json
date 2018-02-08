@@ -22,6 +22,7 @@
 
     "apierror-stashrequirefilename": "Error information in the API",
     "apierror-removeonlystash": "Error information in the API",
+    "apierror-nolinkedaccount": "Error information in the API",
 
 	"log-name-remoteupload": "The Special:Log log name that appears in the drop-down on the Special:Log page",
 	"log-description-remoteupload": "The Special:Log description that appears on the Special:Log page when you filter logs on this specific log name",
