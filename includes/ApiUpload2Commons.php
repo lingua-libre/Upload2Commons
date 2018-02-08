@@ -49,7 +49,7 @@ class ApiUpload2Commons extends ApiBase {
 
 		// Parameter handling
 		$params = $this->extractRequestParams();
-		$this->requireOnlyOneParameter($params, 'filename', 'filekey');
+		$this->requireOnlyOneParameter($params, 'localfilename', 'filekey');
 
         // Prepare the request
         $request = $this->forgeRequest( $params );
@@ -74,8 +74,8 @@ class ApiUpload2Commons extends ApiBase {
 
 	    // Fetch the given (possibely stashed) file from it's name
         $localRepo = RepoGroup::singleton()->getLocalRepo();
-        if( $params['filename'] ) {
-			$file = wfLocalFile( $params['filename'] );
+        if( $params['localfilename'] ) {
+			$file = wfLocalFile( $params['localfilename'] );
         }
         else {
             $this->stash = $localRepo->getUploadStash( $this->user );
@@ -84,15 +84,15 @@ class ApiUpload2Commons extends ApiBase {
 
         // Check that the file exists
 	    if ( !$file->exists() ) {
-		    $this->dieWithError( [ 'apierror-invalidtitle', wfEscapeWikiText( $params['filename'] ) ] );
+		    $this->dieWithError( [ 'apierror-invalidtitle', wfEscapeWikiText( $params['localfilename'] ) ] );
 	    }
 
 	    // By default, the file will have the same name on the remote wiki
-	    // but let the user change it by using the 'remotefilename param
+	    // but let the user change it by using the remotefilename param
 	    $title = $file->getTitle();
 	    $request['filename'] = $title->getPrefixedText();
-	    if ( $params['remotefilename'] ) {
-	        $request['filename'] = Title::makeTitle(NS_FILE, $params['remotefilename']);
+	    if ( $params['filename'] ) {
+	        $request['filename'] = Title::makeTitle(NS_FILE, $params['filename']);
 	    }
 
 	    $request['file'] = new \CurlFile($file->getLocalRefPath());
@@ -102,7 +102,7 @@ class ApiUpload2Commons extends ApiBase {
 	    if ( $params['text'] ) {
 	        $request['text'] = $params['text'];
 	    }
-	    else if ( $params['filename'] ) {
+	    else if ( $params['localfilename'] ) {
 	        $request['text'] = WikiPage::factory( $title )->getContent()->mText;
 	    }
 
@@ -123,13 +123,13 @@ class ApiUpload2Commons extends ApiBase {
 
 	public function getAllowedParams() {
 		return [
-			'filename' => [
+			'localfilename' => [
 				ApiBase::PARAM_TYPE => 'string',
 			],
 			'filekey' => [
 				ApiBase::PARAM_TYPE => 'string',
 			],
-			'remotefilename' => [
+			'filename' => [
 				ApiBase::PARAM_TYPE => 'string',
 			],
 			'text' => [
