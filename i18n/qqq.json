@@ -18,7 +18,13 @@
     "apihelp-upload-to-commons-param-text": "{{doc-apihelp-param|upload-to-commons|text}}",
     "apihelp-upload-to-commons-param-ignorewarnings": "{{doc-apihelp-param|upload-to-commons|ignorewarnings}}",
     "apihelp-upload-to-commons-param-removeafterupload": "{{doc-apihelp-param|upload-to-commons|removeafterupload}}",
+    "apihelp-upload-to-commons-param-logtags": "{{doc-apihelp-param|upload-to-commons|logtags}}",
 
     "apierror-stashrequirefilename": "Error information in the API",
-    "apierror-removeonlystash": "Error information in the API"
+    "apierror-removeonlystash": "Error information in the API",
+
+	"log-name-remoteupload": "The Special:Log log name that appears in the drop-down on the Special:Log page",
+	"log-description-remoteupload": "The Special:Log description that appears on the Special:Log page when you filter logs on this specific log name",
+	"logentry-remoteupload-stashedfile": "The template of the log entry message",
+	"logentry-remoteupload-file": "The template of the log entry message"
 }

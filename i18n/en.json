@@ -18,7 +18,13 @@
     "apihelp-upload-to-commons-param-text": "Initial page text for new files. If not specified, the page text of the local file will be used instead.",
     "apihelp-upload-to-commons-param-ignorewarnings": "Ignore any warnings on the remote wiki.",
     "apihelp-upload-to-commons-param-removeafterupload": "Remove the stashed file if the upload succeeded (doesn't delete any already on-wiki files, see <kbd>[[Special:ApiHelp/delete|action=delete]]</kbd> for that).",
+    "apihelp-upload-to-commons-param-logtags": "Set custom tags to the remoteupload log entry.",
 
     "apierror-stashrequirefilename": "You have to set a  <kbd>filename</kbd> when uploading from stash.",
-    "apierror-removeonlystash": "The <kbd>removeafterupload</kbd> parameter can only remove stashed files. For already on-wiki files, see <kbd>action=delete</kbd>."
+    "apierror-removeonlystash": "The <kbd>removeafterupload</kbd> parameter can only remove stashed files. For already on-wiki files, see <kbd>action=delete</kbd>.",
+
+    "log-name-remoteupload": "Remote upload log",
+	"log-description-remoteupload": "These events track when someone upload a file to the remote wiki using OAuth.",
+	"logentry-remoteupload-stashedfile": "$1 {{GENDER:$2|has uploaded}} a file to the remote wiki: $6",
+	"logentry-remoteupload-file": "$1 {{GENDER:$2|has uploaded}} $3 to the remote wiki: $6"
 }

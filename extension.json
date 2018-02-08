@@ -42,9 +42,17 @@
     },
     "AutoloadClasses": {
         "Upload2Commons\\OAuthRequest": "includes/OAuthRequest.php",
-        "Upload2Commons\\ApiUpload2Commons": "includes/ApiUpload2Commons.php"
+        "Upload2Commons\\ApiUpload2Commons": "includes/ApiUpload2Commons.php",
+        "Upload2Commons\\RemoteUploadLogFormatter": "includes/RemoteUploadLogFormatter.php"
     },
     "APIModules": {
         "upload-to-commons": "Upload2Commons\\ApiUpload2Commons"
+    },
+    "LogTypes": [
+        "remoteupload"
+    ],
+    "LogActionsHandlers": {
+        "remoteupload/file": "Upload2Commons\\RemoteUploadLogFormatter",
+        "remoteupload/stashedfile": "Upload2Commons\\RemoteUploadLogFormatter"
     }
 }

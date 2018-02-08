@@ -17,6 +17,7 @@ use Title;
 use RepoGroup;
 use FSFile;
 use WikiPage;
+use ManualLogEntry;
 use ApiQueryStashImageInfo;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
@@ -66,12 +67,35 @@ class ApiUpload2Commons extends ApiBase {
         $requester = new OAuthRequest();
 		$result = $requester->postWithToken( $this->user, 'csrf', $request, true );
 
-        // Remove the stash if the upload has succeeded and if asked by the user
-		if ( $params['removeafterupload'] ) {
-		    $isRemoved = $this->removeAfterUpload( $result, $params['filekey'] );
-            $this->getResult()->addValue( null, $this->getModuleName(),
-                [ 'removeafterupload' => json_encode( $isRemoved ) ]
-            );
+        if ( $this->isUploadSuccessfull( $result ) ) {
+            // Log the action
+            if ( $params['localfilename'] ) {
+                $logEntry = new ManualLogEntry( 'remoteupload', 'file' );
+                $logEntry->setTarget( $this->file->getTitle() );
+            }
+            else {
+                $logEntry = new ManualLogEntry( 'remoteupload', 'stashedfile' );
+                $logEntry->setTarget( Title::makeTitle( NS_SPECIAL, 'UploadStash' ) );
+            }
+            $logEntry->setPerformer( $this->user );
+            $logEntry->setParameters( array(
+                '4::remoteurl' => $result->upload->imageinfo->descriptionurl,
+                '5::remotetitle' => $result->upload->imageinfo->canonicaltitle,
+            ) );
+            if ( $params['logtags'] ) {
+                $logEntry->setTags( $params['logtags'] );
+            }
+
+            $logid = $logEntry->insert();
+            $logEntry->publish( $logid );
+
+            // Remove the stash if the upload has succeeded and if asked by the user
+		    if ( $params['removeafterupload'] ) {
+		        $isRemoved = $this->stash->removeFile( $params['filekey'] );
+                $this->getResult()->addValue( null, $this->getModuleName(),
+                    [ 'removeafterupload' => json_encode( $isRemoved ) ]
+                );
+		    }
 		}
 
 	    $this->getResult()->addValue( null, $this->getModuleName(),
@@ -92,14 +116,14 @@ class ApiUpload2Commons extends ApiBase {
 	    }
 	}
 
-	private function removeAfterUpload( $result, $filekey ) {
+    public function isUploadSuccessfull( $result ) {
         if( isset( $result->upload->result ) ) {
             if ( $result->upload->result === 'Success' ) {
-                return $this->stash->removeFile( $filekey );
+                return true;
             }
         }
         return false;
-	}
+    }
 
 	public function forgeRequest($params) {
 	    $request = array(
@@ -182,6 +206,10 @@ class ApiUpload2Commons extends ApiBase {
 			],
 			'removeafterupload' => [
 				ApiBase::PARAM_TYPE => 'boolean',
+			],
+			'logtags' => [
+				ApiBase::PARAM_TYPE => 'tags',
+				ApiBase::PARAM_ISMULTI => true,
 			],
 		];
 	}
