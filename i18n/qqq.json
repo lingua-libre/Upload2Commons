@@ -6,7 +6,19 @@
     },
     "upload2Commons": "The name of the extension",
     "upload2Commons-desc": "{{desc|name=Upload2Commons|url=https://www.mediawiki.org/wiki/Extension:Upload2Commons}}",
-    "apihelp-upload-to-commons-summary": "",
-    "apihelp-upload-to-commons-extended-description": "",
-    "apihelp-upload-to-commons-param-filename": ""
+    "apihelp-upload-to-commons-summary": "{{doc-apihelp-summary|upload-to-commons}}",
+    "apihelp-upload-to-commons-extended-description": "{{doc-apihelp-extended-description|upload-to-commons}}",
+    "apihelp-upload-to-commons-example": "{{doc-apihelp-example|upload-to-commons}}",
+
+    "apihelp-upload-to-commons-param-localfilename": "{{doc-apihelp-param|upload-to-commons|localfilename}}",
+    "apihelp-upload-to-commons-param-filekey": "{{doc-apihelp-param|upload-to-commons|filekey}}",
+    "apihelp-upload-to-commons-param-filename": "{{doc-apihelp-param|upload-to-commons|filename}}",
+    "apihelp-upload-to-commons-param-comment": "{{doc-apihelp-param|upload-to-commons|comment}}",
+    "apihelp-upload-to-commons-param-tags": "{{doc-apihelp-param|upload-to-commons|tags}}",
+    "apihelp-upload-to-commons-param-text": "{{doc-apihelp-param|upload-to-commons|text}}",
+    "apihelp-upload-to-commons-param-ignorewarnings": "{{doc-apihelp-param|upload-to-commons|ignorewarnings}}",
+    "apihelp-upload-to-commons-param-removeafterupload": "{{doc-apihelp-param|upload-to-commons|removeafterupload}}",
+
+    "apierror-stashrequirefilename": "Error information in the API",
+    "apierror-removeonlystash": "Error information in the API"
 }

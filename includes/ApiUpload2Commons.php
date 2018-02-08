@@ -50,6 +50,12 @@ class ApiUpload2Commons extends ApiBase {
 		// Parameter handling
 		$params = $this->extractRequestParams();
 		$this->requireOnlyOneParameter($params, 'localfilename', 'filekey');
+		if ( $params['filekey'] and !$params['filename'] ) {
+		    $this->dieWithError( [ 'apierror-stashrequirefilename' ] );
+		}
+		if ( $params['removeafterupload'] and $params['localfilename'] ) {
+		    $this->dieWithError( [ 'apierror-removeonlystash', $params['localfilename'] ] );
+		}
 
         // Prepare the request
         $request = $this->forgeRequest( $params );
@@ -111,7 +117,7 @@ class ApiUpload2Commons extends ApiBase {
 	    }
 
 	    if ( $params['tags'] ) {
-            $request['tags'] = $params['tags'];
+            $request['tags'] = implode( '|', $params['tags'] );
         }
 
 	    if ( $params['ignorewarnings'] ) {
@@ -132,15 +138,15 @@ class ApiUpload2Commons extends ApiBase {
 			'filename' => [
 				ApiBase::PARAM_TYPE => 'string',
 			],
-			'text' => [
-				ApiBase::PARAM_TYPE => 'string',
-			],
 			'comment' => [
 				ApiBase::PARAM_TYPE => 'string',
 			],
 			'tags' => [
-				ApiBase::PARAM_TYPE => 'tags',
+				ApiBase::PARAM_TYPE => 'string',
 				ApiBase::PARAM_ISMULTI => true,
+			],
+			'text' => [
+				ApiBase::PARAM_TYPE => 'string',
 			],
 			'ignorewarnings' => [
 			    ApiBase::PARAM_TYPE => 'boolean',

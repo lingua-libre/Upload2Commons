@@ -5,9 +5,20 @@
         ]
     },
     "upload2Commons": "Upload2Commons",
-    "upload2Commons-desc": "Upload files to commons using OAuth.",
-    "apihelp-upload-to-commons-summary": "Upload a local file to a remote wiki.",
-    "apihelp-upload-to-commons-extended-description": "",
+    "upload2Commons-desc": "Upload local files to a remote wiki using OAuth.",
+    "apihelp-upload-to-commons-summary": "Upload a local wiki file to a remote wiki using OAuth.",
+    "apihelp-upload-to-commons-extended-description": "The file must already be uploaded on the local wiki. Several methods are available:\n* Upload from an on-wiki file, using the <kbd>localfilename</kbd> parameter.\n* Upload from a stashed file, using the <kbd>filekey</kbd> parameter.\nNote that the <kbd>filename</kbd>, <kbd>comment</kbd>, <kbd>tags</kbd>, <kbd>text</kbd> and <kbd>ignorewarnings</kbd> parameters are the same than in <kbd>[[Special:ApiHelp/upload|action=upload]]</kbd>.",
     "apihelp-upload-to-commons-example": "",
-    "apihelp-upload-to-commons-param-filename": "Target filename."
+
+    "apihelp-upload-to-commons-param-localfilename": "Name of a file to upload (without the \"File:\" namespace).",
+    "apihelp-upload-to-commons-param-filekey": "Filekey of a stashed file to upload.",
+    "apihelp-upload-to-commons-param-filename": "Target filename.",
+    "apihelp-upload-to-commons-param-comment": "Upload comment.",
+    "apihelp-upload-to-commons-param-tags": "Change tags to apply to the upload log entry and file page revision on the remote wiki.",
+    "apihelp-upload-to-commons-param-text": "Initial page text for new files. If not specified, the page text of the local file will be used instead.",
+    "apihelp-upload-to-commons-param-ignorewarnings": "Ignore any warnings on the remote wiki.",
+    "apihelp-upload-to-commons-param-removeafterupload": "Remove the stashed file if the upload succeeded (doesn't delete any already on-wiki files, see <kbd>[[Special:ApiHelp/delete|action=delete]]</kbd> for that).",
+
+    "apierror-stashrequirefilename": "You have to set a  <kbd>filename</kbd> when uploading from stash.",
+    "apierror-removeonlystash": "The <kbd>removeafterupload</kbd> parameter can only remove stashed files. For already on-wiki files, see <kbd>action=delete</kbd>."
 }
