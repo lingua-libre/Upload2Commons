@@ -32,7 +32,7 @@ class OAuthRequest extends Client {
 	    }
     }
 
-    public function postWithToken( $user, $tokenType, $apiParams ) {
+    public function postWithToken( $user, $tokenType, $apiParams, $hasFile = false ) {
         $tokens = $this->post( $user, array(
             'action' => 'query',
             'format' => 'json',
@@ -46,27 +46,25 @@ class OAuthRequest extends Client {
             }
         }
         // TODO: raise an error if we failed to get the token
-        return $this->post( $user, $apiParams );
+        return $this->post( $user, $apiParams, $hasFile );
     }
 
-    public function post( $user, $apiParams ) {
-        return $this->request( $user, $apiParams, true );
-    }
-
-    public function get( $user, $apiParams ) {
-        return $this->request( $user, $apiParams, false );
-    }
-
-	protected function request( $user, $apiParams, $isPosted ) {
+    public function post( $user, $apiParams, $hasFile = false ) {
 		$accessToken = $this->getAccessToken( $user );
 
-        $this->setExtraParams( $apiParams ); // sign these too
+        if ( ! isset($apiParams['file']) ) {
+            $this->setExtraParams( $apiParams );
+        }
+        else {
+            $this->setExtraParams( array() );
+        }
 
         return json_decode( $this->makeOAuthCall(
             $accessToken,
             'https://oauth.0x010c.fr/api.php',
-            $isPosted,
-            $apiParams
+            true,
+            $apiParams,
+            $hasFile
         ) );
 	}
 	protected function getAccessToken( $user ) {

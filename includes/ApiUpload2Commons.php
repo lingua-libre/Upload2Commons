@@ -56,10 +56,9 @@ class ApiUpload2Commons extends ApiBase {
 
         // Send the request to the foreign wiki
         $requester = new OAuthRequest();
-		$result = $requester->postWithToken( $this->user, 'csrf', $request );
+		$result = $requester->postWithToken( $this->user, 'csrf', $request, true );
 	    $this->getResult()->addValue( null, $this->getModuleName(),
 			[
-			    'request' => $request,
 			    'result' => $result,
 			]
 		);
@@ -68,7 +67,10 @@ class ApiUpload2Commons extends ApiBase {
 	}
 
 	public function forgeRequest($params) {
-	    $request = array();
+	    $request = array(
+	        'action' => 'upload',
+	        'format' => 'json',
+	    );
 
 	    // Fetch the given (possibely stashed) file from it's name
         $localRepo = RepoGroup::singleton()->getLocalRepo();
@@ -92,6 +94,8 @@ class ApiUpload2Commons extends ApiBase {
 	    if ( $params['remotefilename'] ) {
 	        $request['filename'] = Title::makeTitle(NS_FILE, $params['remotefilename']);
 	    }
+
+	    $request['file'] = new \CurlFile($file->getLocalRefPath());
 
 	    // Fetch the rest of the params to be passed to the remote wiki API
 
