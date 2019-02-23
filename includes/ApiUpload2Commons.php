@@ -139,7 +139,7 @@ class ApiUpload2Commons extends ApiBase {
 	        $request['text'] = $params['text'];
 	    }
 	    else if ( !$this->isFileStashed ) {
-	        $request['text'] = WikiPage::factory( $title )->getContent()->mText;
+	        $request['text'] = WikiPage::factory( $title )->getContent()->getNativeData();
 	    }
 
 	    if ( $params['comment'] ) {
