@@ -23,6 +23,7 @@
     "apierror-stashrequirefilename": "You have to set a  <kbd>filename</kbd> when uploading from stash.",
     "apierror-removeonlystash": "The <kbd>removeafterupload</kbd> parameter can only remove stashed files. For already on-wiki files, see <kbd>action=delete</kbd>.",
     "apierror-nolinkedaccount": "You have to link your account to an account on a remote wiki using OAuth.",
+	"apierror-cantdecoderequest": "The 'request' parameter doesn't contain a valid json string.",
     "apierror-unknownerror-oauth": "Unknown OAuth error.",
 
     "log-name-remoteupload": "Remote upload log",

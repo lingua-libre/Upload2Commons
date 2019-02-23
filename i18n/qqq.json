@@ -23,6 +23,7 @@
     "apierror-stashrequirefilename": "Error information in the API",
     "apierror-removeonlystash": "Error information in the API",
     "apierror-nolinkedaccount": "Error information in the API",
+	"apierror-cantdecoderequest": "Error information in the API",
     "apierror-unknownerror-oauth": "Error information in the API",
 
 	"log-name-remoteupload": "The Special:Log log name that appears in the drop-down on the Special:Log page",

@@ -46,10 +46,12 @@
     "AutoloadClasses": {
         "Upload2Commons\\OAuthRequest": "includes/OAuthRequest.php",
         "Upload2Commons\\ApiUpload2Commons": "includes/ApiUpload2Commons.php",
+        "Upload2Commons\\ApiPost2Commons": "includes/ApiPost2Commons.php",
         "Upload2Commons\\RemoteUploadLogFormatter": "includes/RemoteUploadLogFormatter.php"
     },
     "APIModules": {
-        "upload-to-commons": "Upload2Commons\\ApiUpload2Commons"
+        "upload-to-commons": "Upload2Commons\\ApiUpload2Commons",
+	    "post-to-commons": "Upload2Commons\\ApiPost2Commons"
     },
     "LogTypes": [
         "remoteupload"
